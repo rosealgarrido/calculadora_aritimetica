@@ -1,60 +1,98 @@
 <script setup>
+import { reactive } from "vue";
+import Cabecalho from './components/Cabecalho.vue';
+import Formulario from './components/Formulario.vue';
+
+const estado = reactive({
+  valor1: 0,
+  valor2: 0,
+  resultado: 0,
+  operacao: '+',
+});
+
+function calcular() {
+  estado.valor1 = parseFloat(estado.valor1);
+  estado.valor2 = parseFloat(estado.valor2);
+
+  if (estado.operacao != '') {
+
+    if (estado.operacao === '+') {
+        estado.resultado = estado.valor1 + estado.valor2;
+      } else if (estado.operacao === '-') {
+          estado.resultado = estado.valor1 - estado.valor2;
+      } else if (estado.operacao === '*') {
+          estado.resultado = estado.valor1 * estado.valor2;
+      } else if (estado.operacao === '/') {
+          if (estado.valor2 != 0 ) {
+            estado.resultado = (estado.valor1 / estado.valor2);
+          } else if (estado.resultado === '' || estado.resultado === '0') { 
+            estado.resultado = "";
+          }
+      }    
+  }
+
+  if (estado.resultado > 0) {
+    estado.resultado = estado.resultado.toFixed(2);
+  }
+}
+
+function alteraValor1(evento) {
+  estado.valor1 = evento.target.value;
+  calcular();
+}
+
+function escolheOperacao(evento) {
+  estado.operacao = evento.target.value
+
+  calcular();
+}
+
+function alteraValor2(evento) {
+  estado.valor2 = evento.target.value;
   
-  
-  function somar() {
-    var n1 = parseInt(document.getElementById('n1').value);
-    var n2 = parseInt(document.getElementById('n2').value);
-    document.getElementById('resultado').innerHTML = n1 + n2;
+  if (estado.operacao != '/' || (evento.target.value != 0 && evento.target.value != '')){
+    calcular();
+  } else {
+      estado.resultado = 0;
+      if (evento.target.value != '') {
+        alert('Na divisão, o segundo valor não pode ser zero!');
+      }
   }
-
-  function subtrair() {
-    var n1 = parseInt(document.getElementById('n1').value);
-    var n2 = parseInt(document.getElementById('n2').value);
-    document.getElementById('resultado').innerHTML = n1 - n2;
-  }
-
-  function multiplicar() {
-    var n1 = parseInt(document.getElementById('n1').value);
-    var n2 = parseInt(document.getElementById('n2').value);
-    document.getElementById('resultado').innerHTML = n1 * n2;
-  }
-
-  function dividir() {
-    var n1 = parseInt(document.getElementById('n1').value);
-    var n2 = parseInt(document.getElementById('n2').value);
-    document.getElementById('resultado').innerHTML = n1 / n2;
-  }
+}
 </script>
 
 <template>
-  <div class="container">
-    <header>
-      <h1>Calculadora Aritmética</h1>
-    </header>
-  </div>
-  <form>
-    <div class="row">
-      <div @onclick="resultado" class="col-md-2">
-        <input type="number" placeholder="Digite o primeiro número" class="form-control" id="n1">
-      </div>
-      <div class="col-md-2">
-        <select id="operador">
-          <option value="adicao" v-if="adicao => somar()">Adição</option>
-          <option value="subtracao" v-if="subtracao => subtrair()">Subtração</option>
-          <option value="multiplicacao" v-if="multiplicacao => multiplicar()">Multiplicação</option>
-          <option value="divisao" v-if="divisao => dividir()">Divisão</option>
-        </select>
-      </div>
-    <div class="col-md-2">
-      <input type="number" placeholder="Digite o segundo número" id="n2">
+  <body>
+    <div class="container">
+      <Cabecalho />
+      <Formulario 
+        :calcular="calcular" 
+        :alteraValor1="alteraValor1" 
+        :alteraValor2="alteraValor2" 
+        :escolhaOperacao="escolheOperacao"
+        :operacao="estado.operacao"
+        :valor2="estado.valor2"
+        :resultado="estado.resultado"/>
     </div>
-    <div class="col-md-2">
-      <input type="number" id="resultado" placeholder="Resultado"></div>
-    </div>
-  </form>
-
+  </body>
 </template>
 
 <style scoped>
-  
+  body{
+    background-image: url(./images/mathematics-1509559_1280.jpg);
+    background-size: contain;
+    background-color: transparent;
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+  }  
+  .container {
+    background-color: transparent;
+    color:white;
+    border-radius: 16px;
+    padding-top: 50px;  
+    padding-bottom: 50px;
+    text-align: center;
+  }
 </style>
